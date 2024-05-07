@@ -1,5 +1,7 @@
 <h1>Basic Introduction :</h1>
+
 - Modular component based architechture.
+
 - Grid Component simply renders the data into the grid.
 - features of the Grid (editable cells, sorting, represents the data into the tabular format).
 - Here the data is provided by the backend server although user can defined there own JSON dataset and create there desirable grid;
