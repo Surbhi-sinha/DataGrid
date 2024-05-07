@@ -1,88 +1,84 @@
 import Cell from "./Cell.js";
 
 class Row {
+  id;
   BackgroundColor;
   FontStyle;
   FontSize;
+  FontColor;
   Cells;
   Display;
-
-  constructor() {
-    this.BackgroundColor = "null";
-    this.FontStyle= "null";
-    this.FontSize= "null";
-    this.display = "flex";
+  constructor(id) {
+    this.id = id;
     this.Cells = [];
-
   }
+
   getSize() {
     return this.Cells.length;
   }
-  setDisplay(){
 
-  }
   setBackgroundColor(backgroundColor) {
     this.BackgroundColor = backgroundColor;
-    this.Cells.forEach((cell) =>{
-        cell.setCellBackground(backgroundColor)
-    })
+    this.Cells.forEach((cell) => {
+      cell.setCellBackground(backgroundColor);
+    });
   }
+
   getBackgroundColor() {
     let backgroundColor = this.BackgroundColor;
     return backgroundColor;
   }
-  setFontStyle(fontStyle, fontSize) {
+
+  setFontStyle(fontStyle, fontSize, fontColor) {
     this.FontSize = fontSize;
     this.FontStyle = fontStyle;
-    this.Cells.forEach((cell) =>{
-        cell.setFontStyle(fontStyle,fontSize);
-    })
+    this.FontColor = fontColor;
+    for (let i = 0; i < this.Cells.length; i++) {
+      this.Cells[i].setCellFontStyle(
+        this.FontStyle,
+        this.FontSize,
+        this.FontColor
+      );
+    }
   }
+
   addCell(value) {
     let cell = new Cell(value);
+    cell.setX_Position(this.id);
+    cell.setY_Position(this.Cells.length);
     this.Cells.push(cell);
   }
+
   removeCell() {
     this.Cells.pop();
   }
+
   getFontStyles() {
     let fontSize = this.FontSize;
     let fontStyle = this.FontStyle;
-    return { fontSize, fontStyle };
+    let fontColor = this.FontColor;
+    return { fontSize, fontStyle, fontColor };
   }
+
   getCellValue(index) {
-    // getting the cell from there index;
     return this.Cells[index];
   }
+
   setCellValue(index, value) {
-    // set ting the cell value to that index
     this.Cells[index].setValue(value);
   }
+
   clearRow() {
-    this.Cells = {}
+    this.Cells = {};
   }
 
-  createRowFromArray(arr){
+  createRowFromArray(arr) {
     let currRow = this.Cells;
-    arr.forEach(element => {
-        let cell = new Cell(element);
-        currRow.push(cell);
+    arr.forEach((element) => {
+      let cell = new Cell(element);
+      currRow.push(cell);
     });
     return currRow;
-  }
-
-  render(){
-      const grid = document.getElementById("GridLayout");
-      let row = document.createElement('div');
-      for(let i = 0 ; i < this.Cells.length ; i++){
-            this.Cells[i].setOverflow("hidden");
-            this.Cells[i].setFontStyle("italic" , "15px" );
-            this.Cells[i].setResize("none");
-            this.Cells[i].setBorderStyle("2px" , "solid" , "black");
-            
-            row.appendChild(this.Cells[i].cell);
-      }
-      grid.appendChild(row)
   }
 }
 

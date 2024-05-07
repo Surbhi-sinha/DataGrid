@@ -1,113 +1,206 @@
-// import Column from "./Column.js";
 import Row from "./Row.js";
 
 class Grid {
-  rowCount = 10;
-  columnCount = 10;
-  scrollX;
-  scrollY;
-  height = "auto";
-  width = "100%";
-  backgroundColor;
-  headers = ['A','B','C','D','E','F','G','H','I','J'];
+  rowCount;
+  columnCount;
+  overflow;
+  height;
+  width;
   rows = [];
-  
-  constructor(rowsCount, colsCount) {
-    if(rowsCount && colsCount){
+  data;
+  headers = [];
+
+  constructor(data, rowsCount, colsCount) {
+    if (rowsCount && colsCount) {
       this.rowCount = rowsCount;
       this.columnCount = colsCount;
+    } else {
+      let cols = Object.keys(data[0]).length;
+      let row = data.rows ? data.rows : data.length;
+      let col = data.cols ? data.cols : cols;
+      this.rowCount = row;
+      this.columnCount = col;
     }
+    this.data = data;
   }
-  addHeaders(){
-      //knows how to add column headers
-      // logic : if data is none then A-Z otherwise from the first row of the dataset
-      
+
+  getRowCount() {
+    return this.rowCount;
+  }
+
+  getColumnCount() {
+    return this.columnCount;
   }
 
   getCellValue(row, column) {
-    // know how to return the value of the cell
+    for (let i = 0; i < this.rowCount; i++) {
+      for (let j = 0; j < this.columnCount; j++) {
+        if (
+          this.rows[i].Cells[j].x_position === row &&
+          this.rows[i].Cells[j].y_position === column
+        ) {
+          return this.rows[i].Cells[j].value;
+        }
+      }
+    }
   }
+
   setCellValue(row, column, value) {
-    this.rows[row].setCell(column, value);
+    for (let i = 0; i < this.rowCount; i++) {
+      for (let j = 0; j < this.columnCount; j++) {
+        if (
+          this.rows[i].Cells[j].x_position === row &&
+          this.rows[i].Cells[j].y_position === column
+        ) {
+          this.rows[i].Cells[j].value = value;
+        }
+      }
+    }
   }
-  
-  addRow(){
-    //knows how to add a row
-    let row = new Row();
+
+  createRow(id, column) {
+    let row = new Row(id);
+    for (let i = 0; i < column; i++) {
+      row.addCell();
+    }
+    return row;
+  }
+
+  createGrid() {
+    for (let i = 0; i < this.rowCount; i++) {
+      let row = this.createRow(i, this.columnCount);
+      this.rows.push(row);
+    }
+  }
+
+  addRow() {
+    let row = this.createRow(this.rowCount, this.columnCount);
+    this.rowCount++;
     this.rows.push(row);
   }
 
-  addColumn(){
-    //knows how to add a column
-  }
-
-  removeRow(){
-    //knows how to remove a row
-    this.rows.pop();
-  }
-
-  removeColumn(){
-    //knows how to remove a col
-  }
-  setScrollX(){
-    //knows how to set the scroll for the X;
-  }
-  setScrollY(){
-    // knows how to set the scroll for the Y axis;
-  }
-
-  clearGrid(){
-    //delete all rows
-  }
-
-  setBorder(){
-    //set Border to the div (Grid) 
-  }
-
-// Somehow knows how to create the table
-  createTable = (rowCount, columnCount) => {
-    let colored = true;
-    // Get the GridLayout div
-    var gridLayout = document.getElementById("GridLayout");
-
-    // Create a table element
-    var table = document.createElement("table");
-
-    for (var i = 0; i < rowCount; i++) {
-      // Create a new row
-      var row = document.createElement("tr");
-    
-      for (var j = 0; j < columnCount; j++) {
-        // Create a new column
-        var cell = document.createElement('textarea');
-        cell.setAttribute("id", `Row${i}Column${j}`);
-        cell.style.fontSize = "2em";
-        cell.style.height = '1em';
-        cell.style.width = '5em';
-        cell.style.overflow = "hidden";
-        // cell.style.border = "none";
-        cell.style.resize = "none";
-        cell.style.backgroundColor = "transparent";
-        // cell.textContent = this.getCellValue(i,j).getValue()? this.getCellValue(i,j).getValue():"text";
-        row.appendChild(cell);
-      }
-      if(colored){
-        row.style.backgroundColor = "Yellow"
-        colored = false;
-      }else{
-        colored = true;
-      }
-      // Add the row to the table
-      row.style.whiteSpace = "nowrap"
-      row.style.overflowX = "auto"
-      table.appendChild(row);
+  addColumn() {
+    this.columnCount++;
+    for (let i = 0; i < this.rowCount; i++) {
+      this.rows[i].addCell();
     }
-    // gridLayout.style.overflow = "hidden";
-    // Add the table to the GridLayout div
-    gridLayout.style.border = "solid black 2px"
-    gridLayout.appendChild(table);
-  };
+  }
+
+  removeRow() {
+    this.rows.pop();
+    this.rowCount--;
+  }
+
+  removeColumn() {
+    for (let i = 0; i < this.rowCount; i++) {
+      this.rows[i].removeCell();
+    }
+    this.columnCount--;
+  }
+
+  setOverflow(value) {
+    this.overflow = value;
+  }
+
+  clearGrid() {
+    this.rows = [];
+    this.rowCount = 0;
+    this.columnCount = 0;
+  }
+
+  sortData(data, key, ascending = true) {
+    return data.sort((a, b) => {
+      if (a[key] < b[key]) return ascending ? -1 : 1;
+      if (a[key] > b[key]) return ascending ? 1 : -1;
+      return 0;
+    });
+  }
+
+  RenderHeader(GridElement) {
+    if (this.data) {
+      this.headers = Object.keys(this.data[0]);
+    } else {
+      this.headers = "";
+    }
+
+    const ColumnHeaderRow = document.createElement("div");
+    ColumnHeaderRow.setAttribute("class", "Column-header-row");
+
+    for (let j = 0; j < this.columnCount; j++) {
+      let cell = this.headers[j];
+      let cellElem = document.createElement("textarea");
+      cellElem.textContent = cell;
+      cellElem.setAttribute("class", "grid-header-cell");
+      cellElem.classList.add(`column${j}`);
+      cellElem.readOnly = "true";
+      cellElem.addEventListener("dblclick", () => {
+        let ascending = true;
+        let currData = [...this.data];
+        this.data = this.sortData(currData, cell, ascending);
+        this.data = [...currData];
+        this.Render();
+      });
+      ColumnHeaderRow.appendChild(cellElem);
+    }
+    GridElement.appendChild(ColumnHeaderRow);
+  }
+
+  Render() {
+    this.createGrid();
+
+    const grid = document.querySelector(".Grid");
+    if (!grid) {
+      const gridLayout = document.createElement("Grid");
+      gridLayout.setAttribute("class", "Grid");
+      let GridElement = document.createElement("div");
+      GridElement.setAttribute("class", "grid-element");
+      this.RenderHeader(GridElement);
+
+      for (let i = 0; i < this.rowCount; i++) {
+        let rowElement = document.createElement("div");
+        rowElement.setAttribute("class", `row${i}`);
+        rowElement.classList.add("row");
+
+        if (this.data != undefined && this.data[i]) {
+          let keys = Object.keys(this.data[i]); // Get an array of keys
+
+          for (let j = 0; j < this.columnCount; j++) {
+            let key = keys[j];
+            let cellElem = document.createElement("textarea");
+            cellElem.setAttribute("class", "grid-cell");
+            cellElem.classList.add(`column${j}`);
+            cellElem.addEventListener("keydown", function (event) {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                cellElem.blur();
+              }
+            });
+            if (this.data[i].hasOwnProperty(key)) {
+              let cellValue = this.data[i][key];
+              cellElem.textContent = cellValue;
+            }
+            rowElement.appendChild(cellElem);
+          }
+          GridElement.appendChild(rowElement);
+        } else {
+          for (let j = 0; j < this.columnCount; j++) {
+            let cellElem = document.createElement("textarea");
+            cellElem.setAttribute("class", "grid-cell");
+            cellElem.classList.add(`column${j}`);
+            let cellValue = "";
+            cellElem.textContent = cellValue;
+            rowElement.appendChild(cellElem);
+          }
+        }
+        GridElement.appendChild(rowElement);
+      }
+      gridLayout.appendChild(GridElement);
+      document.body.appendChild(gridLayout);
+    } else {
+      grid.remove();
+      this.Render();
+    }
+  }
 }
 
-// export {Grid} ;
 export default Grid;
