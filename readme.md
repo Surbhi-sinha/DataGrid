@@ -65,3 +65,9 @@ let mygridcustom = new Grid(data, 7, 8);
 mygridcustom.Render();
 
 ```
+
+<div style="height:fit-content; width:fit-content;">
+
+![](https://github.com/Surbhi-sinha/DataGrid/blob/main/Grid_component%20(2).gif)
+
+</div>
