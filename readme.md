@@ -68,6 +68,7 @@ mygridcustom.Render();
 
 <div style="height:fit-content; width:fit-content;">
 
-![](https://github.com/Surbhi-sinha/DataGrid/blob/main/Grid_component%20(2).gif)
+![https://github.com/Surbhi-sinha/DataGrid/blob/main/Grid_component%20(2).gif](https://github.com/Surbhi-sinha/DataGrid/blob/main/DATAGRID.GIF.gif)
+
 
 </div>
